@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
-
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.addressbook.presentation.ContactListScreen
@@ -70,7 +69,7 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         startDestination = Screen.Contacts.route,
                         modifier = Modifier.padding(paddingValues)
-                    ){
+                    ) {
                         composable(Screen.Contacts.route) {
                             val viewModel: ContactViewModel by viewModels()
                             val state by viewModel.state.collectAsState()
@@ -87,18 +86,9 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     }
-
-
-//                val state by viewModel.state.collectAsState()
-//                ContactListScreen(
-//                    state = state,
-//                    onEvent = viewModel::onEvent
-//                )
                 }
             }
         }
-
-
     }
 }
 

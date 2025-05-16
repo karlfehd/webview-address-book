@@ -1,5 +1,7 @@
 package com.example.addressbook.presentation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -25,10 +27,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.addressbook.domain.Contact
 import com.example.addressbook.domain.ContactEvent
 import com.example.addressbook.domain.SortType
+import com.example.addressbook.ui.theme.AddressBookTheme
 
 @Composable
 fun ContactListScreen(
@@ -57,7 +62,7 @@ fun ContactListScreen(
         LazyColumn(
             contentPadding = padding,
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             item {
                 Row(
@@ -91,16 +96,25 @@ fun ContactListScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .background(MaterialTheme.colorScheme.onPrimary)
                 ) {
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
                             text = contact.contactName,
+                            color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleSmall
                         )
                         Text(
                             text = contact.email,
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                        Text(
+                            text = contact.phone,
+                            color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.labelMedium
                         )
 
@@ -110,7 +124,8 @@ fun ContactListScreen(
                     }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete Contact"
+                            contentDescription = "Delete Contact",
+                            tint = MaterialTheme.colorScheme.surfaceTint
                         )
                     }
                 }
@@ -119,43 +134,45 @@ fun ContactListScreen(
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun ContactScreenPreview() {
-    val state = ContactState(
-        contacts = listOf(
-            Contact(
-                customerID = "ALFKI",
-                companyName = "Alfreds Futterkiste",
-                contactName = "Maria Anders",
-                contactTitle = "Sales Representative",
-                email = "test@test.com",
-                phone = "030-0074321",
-                address = "Obere Str. 57",
-                city = "Berlin",
-                country = "Germany",
-                postalCode = "12209",
-                fax = "030-0076545"
+    AddressBookTheme {
+        val state = ContactState(
+            contacts = listOf(
+                Contact(
+                    customerID = "ALFKI",
+                    companyName = "Alfreds Futterkiste",
+                    contactName = "Maria Anders",
+                    contactTitle = "Sales Representative",
+                    email = "test@test.com",
+                    phone = "030-0074321",
+                    address = "Obere Str. 57",
+                    city = "Berlin",
+                    country = "Germany",
+                    postalCode = "12209",
+                    fax = "030-0076545"
+                ),
+                Contact(
+                    customerID = "ALFD",
+                    companyName = "McDonald's",
+                    contactName = "John Doe",
+                    contactTitle = "Manager",
+                    email = "jdoe@mcd.com",
+                    phone = "123-456-7890",
+                    address = "123 Fast Food St.",
+                    city = "Chicago",
+                    country = "USA",
+                    postalCode = "60601",
+                    fax = "123-456-7891"
+                )
             ),
-            Contact(
-                customerID = "ALFD",
-                companyName = "McDonald's",
-                contactName = "John Doe",
-                contactTitle = "Manager",
-                email = "jdoe@mcd.com",
-                phone = "123-456-7890",
-                address = "123 Fast Food St.",
-                city = "Chicago",
-                country = "USA",
-                postalCode = "60601",
-                fax = "123-456-7891"
-            )
-        ),
-        isAddingContact = true,
-        sortType = SortType.NAME
-    )
-    ContactListScreen(
-        state = state,
-        onEvent = {}
-    )
+            isAddingContact = false,
+            sortType = SortType.NAME
+        )
+        ContactListScreen(
+            state = state,
+            onEvent = {}
+        )
+    }
 }

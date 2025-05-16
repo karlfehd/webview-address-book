@@ -35,7 +35,7 @@ fun ContactsWebView(
             }
             webChromeClient = WebChromeClient()
             setWebContentsDebuggingEnabled(true)
-            //addJavascriptInterface(WebAppBridge(viewModel, this@MainActivity, webView), "Android")
+            //addJavascriptInterface(WebAppBridge(viewModel, this, webView), "Android")
             loadUrl("file:///android_asset/index.html")
         }
     })
