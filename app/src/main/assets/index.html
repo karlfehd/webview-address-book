@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Basic Address Book</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="js/app.js"></script>
+</head>
+<body ng-app="AddressBookApp" ng-controller="MainCtrl">
+  <div>
+    <!-- <button onclick="window.Android.createNewContact()">New Contact</button> -->
+    <input type="file" id="xmlInput" accept=".xml" ng-change="importXmlFile($event)" onchange="angular.element(this).scope().importXmlFile(event)">
+  </div>
+
+  <div class="container">
+    <h2>Add New Contact</h2>
+    <form id="contactForm">
+      <input type="text" id="customerID" placeholder="Customer ID">
+      <input type="text" id="companyName" placeholder="Company Name">
+      <input type="text" id="contactName" placeholder="Contact Name*" required>
+      <input type="text" id="contactTitle" placeholder="Contact Title">
+      <input type="text" id="address" placeholder="Address">
+      <input type="text" id="city" placeholder="City">
+      <input type="email" id="email" placeholder="Email*" required>
+      <input type="text" id="postalCode" placeholder="Postal Code">
+      <input type="text" id="country" placeholder="Country">
+      <input type="tel" id="phone" placeholder="Phone">
+      <input type="text" id="fax" placeholder="Fax">
+      <button type="button" onclick="submitContact()">New Contact</button>
+    </form>
+  </div>
+
+  <div>
+    <button onClick="window.Android.testBridge('Hello from JS side')">Test Bridge</button>
+  </div>
+
+  <div ng-if="contacts.length > 0">
+    <input type="text" ng-model="search" placeholder="Search...">
+    <button onclick="exportToJson()">Export to JSON</button>
+    <button onclick="window.Android?.exportContacts?.()">Export to Android</button>
+  </div>
+
+  <div ng-if="contacts.length === 0">
+    <p>No contacts available. Please import an XML file or create a new contact.</p>
+  </div>
+
+  <div class="contact-card" ng-repeat="contact in contacts | filter:search" ng-if="contacts.length > 0">
+    <h3>{{contact.contactName}}</h3>
+    <p><strong>Company:</strong> {{contact.companyName}}</p>
+    <p><strong>Title:</strong> {{contact.contactTitle}}</p>
+    <p><strong>Address:</strong> {{contact.address}}, {{contact.city}}, {{contact.postalCode}}, {{contact.country}}</p>
+    <p><a href="tel:{{contact.phone}}">{{contact.phone}}</a></p>
+    <p><a href="mailto:{{contact.email}}">{{contact.email}}</a></p>
+    <button ng-click="editContact($index)">Edit</button>
+    <button ng-click="deleteContact($index)">Delete</button>
+  </div>
+    
+</body>
+</html>
