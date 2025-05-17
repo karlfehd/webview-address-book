@@ -5,14 +5,14 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.example.addressbook.presentation.ContactsViewModel
+import com.example.addressbook.presentation.WebViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class WebAppBridge(
-    private val viewModel: ContactsViewModel,
-    private val lifecycleOwner: LifecycleOwner,
+    private val viewModel: WebViewModel,
+    lifecycleOwner: LifecycleOwner,
     private val webViewProvider: WebView,
 ) {
     private val gson = Gson()
@@ -22,9 +22,16 @@ class WebAppBridge(
         lifecycleOwner.lifecycleScope.launch {
             viewModel.contacts.collectLatest { contacts ->
                 val json = gson.toJson(contacts)
-                val webView = webViewProvider
-                webView.post {
-                    webView.evaluateJavascript("loadContacts('$json');", null)
+                Log.d("WebAppBridge", "Contacts from init: $json")
+                webViewProvider.post {
+                    webViewProvider.evaluateJavascript(
+                        "(function() {" +
+                                "var scope = angular.element(document.body).scope();" +
+                                "scope.contacts = $json;" +
+                                "scope.\$apply();" +
+                                "})();",
+                        null
+                    )
                 }
             }
         }
@@ -33,31 +40,35 @@ class WebAppBridge(
     @JavascriptInterface
     fun testBridge(message: String) {
         Log.d("WebAppBridge", "testBridge called with message: $message")
-    }
-
-    @JavascriptInterface
-    fun importContacts(jsonContacts: String) {
-        Log.d("WebAppBridge", "importContacts called with: $jsonContacts")
-        viewModel.saveContactsFromJson(jsonContacts)
-        webViewProvider.post {
-            webViewProvider.evaluateJavascript("loadContacts('${viewModel.getContactsAsJson()}');", null)
-        }
+        Log.d("WebAppBridge", "Contacts: ${viewModel.getContactsAsJson()}")
     }
 
     @JavascriptInterface
     fun createNewContact(jsonContact: String) {
-        Log.d("WebAppBridge", "createNewContact called")
-        val contact = gson.fromJson(jsonContact, Contact::class.java)
-        viewModel.addContact(contact)
+        Log.d("WebAppBridge", "createNewContact called with: $jsonContact")
+        try {
+            val contact = gson.fromJson(jsonContact, Contact::class.java)
+            viewModel.addContact(contact)
+        } catch (e: Exception) {
+            Log.e("WebAppBridge", "Error creating contact: ${e.message}")
+        }
     }
 
     @JavascriptInterface
-    fun exportContacts() {
-        //viewModel.loadFromLocalFile()
+    fun deleteContact(index: Int) {
+        Log.d("WebAppBridge", "deleteContact called for index: $index")
+        viewModel.deleteContact(index)
     }
 
     @JavascriptInterface
-    fun saveContacts(json: String) {
-        viewModel.saveContactsFromJson(json)
+    fun updateContact(jsonContact: String) {
+        Log.d("WebAppBridge", "updateContact called with: $jsonContact")
+        try {
+            val contact = gson.fromJson(jsonContact, Contact::class.java)
+            viewModel.updateContact(contact)
+        } catch (e: Exception) {
+            Log.e("WebAppBridge", "Error updating contact: ${e.message}")
+        }
     }
+
 }

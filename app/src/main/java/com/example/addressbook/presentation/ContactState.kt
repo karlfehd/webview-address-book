@@ -18,6 +18,13 @@ data class ContactState(
     val contactPhone: String = "",
     val contactFax: String = "",
 
+    val isEditing: Boolean = false,
+    val editingContact: Contact? = null,
     val isAddingContact: Boolean = false,
-    val sortType: SortType = SortType.NAME
+    val sortType: SortType = SortType.NAME,
+    val selectedContact: Contact? = null,
+
+    val nameError: String = "",
+    val emailError: String = "",
+    val isValid: Boolean = false,
 )

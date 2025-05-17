@@ -19,14 +19,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.addressbook.presentation.ContactListScreen
 import com.example.addressbook.presentation.ContactViewModel
-import com.example.addressbook.presentation.ContactsViewModel
+import com.example.addressbook.presentation.WebViewModel
 import com.example.addressbook.presentation.ContactsWebView
-import com.example.addressbook.presentation.Screen
+import com.example.addressbook.presentation.ContactsWebView2
+import com.example.addressbook.presentation.NavigationTarget
 import com.example.addressbook.ui.theme.AddressBookTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,25 +41,25 @@ class MainActivity : ComponentActivity() {
         setContent {
             AddressBookTheme {
                 val navController = rememberNavController()
-                var selectedRoute by remember { mutableStateOf(Screen.Contacts.route) }
+                var selectedRoute by remember { mutableStateOf(NavigationTarget.Contacts.route) }
 
                 Scaffold(
                     bottomBar = {
                         NavigationBar {
                             NavigationBarItem(
-                                selected = selectedRoute == Screen.Contacts.route,
+                                selected = selectedRoute == NavigationTarget.Contacts.route,
                                 onClick = {
-                                    selectedRoute = Screen.Contacts.route
-                                    navController.navigate(Screen.Contacts.route)
+                                    selectedRoute = NavigationTarget.Contacts.route
+                                    navController.navigate(NavigationTarget.Contacts.route)
                                 },
                                 icon = { Icon(Icons.AutoMirrored.Filled.List, "Contacts") },
                                 label = { Text("Contacts") }
                             )
                             NavigationBarItem(
-                                selected = selectedRoute == Screen.WebView.route,
+                                selected = selectedRoute == NavigationTarget.WebView.route,
                                 onClick = {
-                                    selectedRoute = Screen.WebView.route
-                                    navController.navigate(Screen.WebView.route)
+                                    selectedRoute = NavigationTarget.WebView.route
+                                    navController.navigate(NavigationTarget.WebView.route)
                                 },
                                 icon = { Icon(Icons.Default.AccountBox, "Web View") },
                                 label = { Text("Web View") }
@@ -67,10 +69,10 @@ class MainActivity : ComponentActivity() {
                 ) { paddingValues ->
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.Contacts.route,
+                        startDestination = NavigationTarget.Contacts.route,
                         modifier = Modifier.padding(paddingValues)
                     ) {
-                        composable(Screen.Contacts.route) {
+                        composable(NavigationTarget.Contacts.route) {
                             val viewModel: ContactViewModel by viewModels()
                             val state by viewModel.state.collectAsState()
                             ContactListScreen(
@@ -78,12 +80,13 @@ class MainActivity : ComponentActivity() {
                                 onEvent = viewModel::onEvent
                             )
                         }
-                        composable(Screen.WebView.route) {
-                            val viewModel: ContactsViewModel by viewModels()
-                            ContactsWebView(
-                                webView = android.webkit.WebView(this@MainActivity),
-                                viewModel = viewModel
-                            )
+                        composable(NavigationTarget.WebView.route) {
+                            val viewModel: WebViewModel by viewModels()
+//                            ContactsWebView(
+//                                webView = android.webkit.WebView(this@MainActivity),
+//                                viewModel = viewModel
+//                            )
+                            ContactsWebView2(viewModel = viewModel)
                         }
                     }
                 }

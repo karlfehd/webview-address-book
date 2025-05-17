@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="addressBook">
 <head>
   <meta charset="UTF-8">
   <title>Basic Address Book</title>
   <link rel="stylesheet" href="css/styles.css">
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/app.js"
+          onload="console.log('app.js loaded')"
+          onerror="console.error('Failed to load app.js')"></script>
 </head>
-<body ng-app="AddressBookApp" ng-controller="MainCtrl">
+<body ng-controller="ContactController">
   <div>
     <!-- <button onclick="window.Android.createNewContact()">New Contact</button> -->
     <input type="file" id="xmlInput" accept=".xml" ng-change="importXmlFile($event)" onchange="angular.element(this).scope().importXmlFile(event)">
   </div>
 
-  <div class="container">
+  <!-- <div class="container">
     <h2>Add New Contact</h2>
     <form id="contactForm">
       <input type="text" id="customerID" placeholder="Customer ID">
@@ -27,13 +29,27 @@
       <input type="text" id="country" placeholder="Country">
       <input type="tel" id="phone" placeholder="Phone">
       <input type="text" id="fax" placeholder="Fax">
-      <button type="button" onclick="submitContact()">New Contact</button>
+      <button type="button" onclick="submitContact()">Submit</button>
     </form>
-  </div>
+  </div> -->
 
   <div>
     <button onClick="window.Android.testBridge('Hello from JS side')">Test Bridge</button>
   </div>
+  <div>
+    <p>Debug1: {{testName}} </p>
+    <p>Debug3: {{testName3}} </p>
+  </div>
+
+
+  <div>
+    <p>Debug: {{contacts.length}} contacts loaded</p>
+    <div ng-repeat="contact in contacts">
+        <p>{{contact.contactName}} - {{contact.email}}</p>
+    </div>
+    <!-- If nothing shows, display a message -->
+    <p ng-if="!contacts || contacts.length === 0">No contacts loaded</p>
+</div>
 
   <div ng-if="contacts.length > 0">
     <input type="text" ng-model="search" placeholder="Search...">
@@ -45,7 +61,7 @@
     <p>No contacts available. Please import an XML file or create a new contact.</p>
   </div>
 
-  <div class="contact-card" ng-repeat="contact in contacts | filter:search" ng-if="contacts.length > 0">
+  <div class="contact-card" ng-repeat="contact in contacts" ng-if="contacts.length > 0">
     <h3>{{contact.contactName}}</h3>
     <p><strong>Company:</strong> {{contact.companyName}}</p>
     <p><strong>Title:</strong> {{contact.contactTitle}}</p>

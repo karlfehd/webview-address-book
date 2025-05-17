@@ -2,6 +2,8 @@ package com.example.addressbook.domain
 
 sealed interface ContactEvent {
     data object SaveContact : ContactEvent
+    data class EditContact(val contact: Contact): ContactEvent
+
     data class SetCustomerId(val customerId: String) : ContactEvent
     data class SetCompanyName(val companyName: String) : ContactEvent
     data class SetContactName(val name: String) : ContactEvent
@@ -16,6 +18,10 @@ sealed interface ContactEvent {
 
     data object ShowDialog : ContactEvent
     data object HideDialog : ContactEvent
+
+    data class ShowContactDetails(val contact: Contact) : ContactEvent
+    object HideContactDetails : ContactEvent
+
     data class SortContacts(val sortType: SortType) : ContactEvent
     data class DeleteContact(val contact: Contact) : ContactEvent
 }

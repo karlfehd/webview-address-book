@@ -1,7 +1,6 @@
 package com.example.addressbook.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -26,8 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.addressbook.domain.Contact
@@ -42,9 +40,11 @@ fun ContactListScreen(
 ) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                onEvent(ContactEvent.ShowDialog)
-            }) {
+            FloatingActionButton(
+                onClick = { onEvent(ContactEvent.ShowDialog) },
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add Contact"
@@ -59,24 +59,40 @@ fun ContactListScreen(
                 onEvent = onEvent
             )
         }
+        state.selectedContact?.let { contact ->
+            ContactDetailsScreen(
+                contact = contact,
+                onDismiss = {
+                    onEvent(ContactEvent.HideContactDetails)
+                },
+                onEdit = {
+                    onEvent(ContactEvent.EditContact(contact))
+                    onEvent(ContactEvent.HideContactDetails)
+                }
+            )
+        }
         LazyColumn(
             contentPadding = padding,
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(vertical = 8.dp)
                         .horizontalScroll(rememberScrollState()),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     SortType.entries.forEach { sortType ->
                         Row(
                             modifier = Modifier
+                                .clip(MaterialTheme.shapes.small)
                                 .clickable {
                                     onEvent(ContactEvent.SortContacts(sortType))
-                                },
+                                }
+                                .padding(horizontal = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             RadioButton(
@@ -87,7 +103,10 @@ fun ContactListScreen(
                             )
                             Text(
                                 text = sortType.name.lowercase()
-                                    .replaceFirstChar { it.uppercase() })
+                                    .replaceFirstChar { it.uppercase() },
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
                         }
                     }
                 }
@@ -96,26 +115,33 @@ fun ContactListScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                        .background(MaterialTheme.colorScheme.onPrimary)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .clickable {
+                            onEvent(ContactEvent.ShowContactDetails(contact))
+                        }
+                        .padding(16.dp)
                 ) {
                     Column(
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+
                     ) {
                         Text(
                             text = contact.contactName,
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.titleSmall
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.titleMedium
                         )
                         Text(
                             text = contact.email,
-                            color = MaterialTheme.colorScheme.secondary,
-                            style = MaterialTheme.typography.labelMedium
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium
                         )
                         Text(
                             text = contact.phone,
-                            color = MaterialTheme.colorScheme.secondary,
-                            style = MaterialTheme.typography.labelMedium
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium
                         )
 
                     }
@@ -125,7 +151,7 @@ fun ContactListScreen(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete Contact",
-                            tint = MaterialTheme.colorScheme.surfaceTint
+                            tint = MaterialTheme.colorScheme.error
                         )
                     }
                 }
