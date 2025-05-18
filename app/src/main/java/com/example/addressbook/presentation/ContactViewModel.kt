@@ -98,7 +98,9 @@ class ContactViewModel @Inject constructor(
             is ContactEvent.SaveContact -> {
                 if (event.contact != null) {
                     viewModelScope.launch {
-                        dao.insertContact(event.contact)
+                        if (!isDuplicateContact(event.contact.contactName)) {
+                            dao.insertContact(event.contact)
+                        }
                     }
                 } else {
                     val contact = Contact(
@@ -118,28 +120,36 @@ class ContactViewModel @Inject constructor(
                         return
                     }
                     viewModelScope.launch {
+                        if (isDuplicateContact(contact.contactName)) {
+                            _state.update {
+                                it.copy(
+                                    errorMessage = "A contact with this name already exists"
+                                )
+                            }
+                            return@launch
+                        }
                         if (state.value.isEditing) {
                             state.value.editingContact?.let { oldContact ->
                                 dao.deleteContact(oldContact)
                             }
                         }
                         dao.insertContact(contact)
-                    }
-                    _state.update {
-                        it.copy(
-                            isAddingContact = false,
-                            customerID = "",
-                            companyName = "",
-                            contactName = "",
-                            contactTitle = "",
-                            contactEmail = "",
-                            contactPhone = "",
-                            contactAddress = "",
-                            contactCity = "",
-                            contactCountry = "",
-                            contactPostalCode = "",
-                            contactFax = ""
-                        )
+                        _state.update {
+                            it.copy(
+                                isAddingContact = false,
+                                customerID = "",
+                                companyName = "",
+                                contactName = "",
+                                contactTitle = "",
+                                contactEmail = "",
+                                contactPhone = "",
+                                contactAddress = "",
+                                contactCity = "",
+                                contactCountry = "",
+                                contactPostalCode = "",
+                                contactFax = ""
+                            )
+                        }
                     }
                 }
 
@@ -309,5 +319,10 @@ class ContactViewModel @Inject constructor(
 
     private fun isValidEmail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private suspend fun isDuplicateContact(contactName: String): Boolean {
+        val existingContacts = dao.getContactsByName(contactName)
+        return existingContacts.isNotEmpty()
     }
 }

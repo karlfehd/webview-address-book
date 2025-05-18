@@ -6,6 +6,7 @@ import com.example.addressbook.domain.SortType
 data class ContactState(
     val contacts: List<Contact> = emptyList(),
     val successMessage: String? = null,
+    val errorMessage: String? = null,
 
     val customerID: String = "",
     val companyName: String = "",

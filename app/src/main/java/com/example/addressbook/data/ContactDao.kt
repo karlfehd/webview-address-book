@@ -22,4 +22,7 @@ interface ContactDao {
     @Query("SELECT * FROM contact ORDER BY email ASC")
     fun getContactsSortedByEmail(): Flow<List<Contact>>
 
+    @Query("SELECT * FROM contact WHERE contactName = :contactName")
+    suspend fun getContactsByName(contactName: String): List<Contact>
+
 }
