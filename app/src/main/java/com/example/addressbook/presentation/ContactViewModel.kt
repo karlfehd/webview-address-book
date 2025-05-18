@@ -8,6 +8,7 @@ import com.example.addressbook.domain.ContactEvent
 import com.example.addressbook.domain.SortType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -94,57 +95,63 @@ class ContactViewModel @Inject constructor(
                 }
             }
 
-            ContactEvent.SaveContact -> {
-                val name = state.value.contactName
-                val title = state.value.contactTitle
-                val email = state.value.contactEmail
-                val phone = state.value.contactPhone
-                val address = state.value.contactAddress
-                val city = state.value.contactCity
-                val country = state.value.contactCountry
-                val postalCode = state.value.contactPostalCode
-                val fax = state.value.contactFax
-                val customerId = state.value.customerID
-                val companyName = state.value.companyName
-                val contact = Contact(
-                    customerID = customerId,
-                    companyName = companyName,
-                    contactName = name,
-                    contactTitle = title,
-                    email = email,
-                    phone = phone,
-                    address = address,
-                    city = city,
-                    country = country,
-                    postalCode = postalCode,
-                    fax = fax
-                )
-                if (!validateContact()) {
-                    return
-                }
-                viewModelScope.launch {
-                    if (state.value.isEditing) {
-                        state.value.editingContact?.let { oldContact ->
-                            dao.deleteContact(oldContact)
-                        }
+            is ContactEvent.SaveContact -> {
+                if (event.contact != null) {
+                    viewModelScope.launch {
+                        dao.insertContact(event.contact)
                     }
-                    dao.insertContact(contact)
-                }
-                _state.update {
-                    it.copy(
-                        isAddingContact = false,
-                        customerID = "",
-                        companyName = "",
-                        contactName = "",
-                        contactTitle = "",
-                        contactEmail = "",
-                        contactPhone = "",
-                        contactAddress = "",
-                        contactCity = "",
-                        contactCountry = "",
-                        contactPostalCode = "",
-                        contactFax = ""
+                } else {
+                    val contact = Contact(
+                        customerID = state.value.customerID,
+                        companyName = state.value.companyName,
+                        contactName = state.value.contactName,
+                        contactTitle = state.value.contactTitle,
+                        email = state.value.contactEmail,
+                        phone = state.value.contactPhone,
+                        address = state.value.contactAddress,
+                        city = state.value.contactCity,
+                        country = state.value.contactCountry,
+                        postalCode = state.value.contactPostalCode,
+                        fax = state.value.contactFax
                     )
+                    if (!validateContact()) {
+                        return
+                    }
+                    viewModelScope.launch {
+                        if (state.value.isEditing) {
+                            state.value.editingContact?.let { oldContact ->
+                                dao.deleteContact(oldContact)
+                            }
+                        }
+                        dao.insertContact(contact)
+                    }
+                    _state.update {
+                        it.copy(
+                            isAddingContact = false,
+                            customerID = "",
+                            companyName = "",
+                            contactName = "",
+                            contactTitle = "",
+                            contactEmail = "",
+                            contactPhone = "",
+                            contactAddress = "",
+                            contactCity = "",
+                            contactCountry = "",
+                            contactPostalCode = "",
+                            contactFax = ""
+                        )
+                    }
+                }
+
+
+            }
+
+            is ContactEvent.ImportSuccess -> {
+                _state.update { it.copy(successMessage = "Successfully imported ${event.count} contacts") }
+                // Clear success message after delay
+                viewModelScope.launch {
+                    delay(3000)
+                    _state.update { it.copy(successMessage = null) }
                 }
             }
 
@@ -163,7 +170,7 @@ class ContactViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         contactName = event.name,
-                        nameError = if (event.name.isBlank()) ""  else it.nameError
+                        nameError = if (event.name.isBlank()) "" else it.nameError
                     )
                 }
             }
@@ -286,10 +293,12 @@ class ContactViewModel @Inject constructor(
                         isValid = false
                         "Email is required"
                     }
+
                     !isValidEmail(currentState.contactEmail) -> {
                         isValid = false
                         "Invalid email format"
                     }
+
                     else -> ""
                 }
             )

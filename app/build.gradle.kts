@@ -64,7 +64,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.navigation.fragment)
-    implementation("androidx.navigation:navigation-common:2.9.0")
+    implementation(libs.androidx.navigation.common)
 
     // Gson for JSON parsing
     implementation(libs.gson)
@@ -72,6 +72,7 @@ dependencies {
 
     // Hilt dependencies
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.hilt.android.compiler)
 
     // Room dependencies

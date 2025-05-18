@@ -68,7 +68,7 @@ fun AddContactDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onEvent(ContactEvent.SaveContact)
+                    onEvent(ContactEvent.SaveContact())
                 },
                 enabled = state.nameError.isEmpty() && state.emailError.isEmpty()
             ) {

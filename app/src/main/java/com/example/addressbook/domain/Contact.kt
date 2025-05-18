@@ -5,17 +5,17 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Contact(
-    val customerID: String = "",
-    val companyName: String = "",
-    val contactName: String, // required
-    val contactTitle: String = "",
-    val address: String = "",
-    val city: String = "",
-    val email: String,  // required
-    val postalCode: String = "",
-    val country: String = "",
-    val phone: String = "",
-    val fax: String = "",
+    var customerID: String = "",
+    var companyName: String = "",
+    var contactName: String, // required
+    var contactTitle: String = "",
+    var address: String = "",
+    var city: String = "",
+    var email: String,  // required
+    var postalCode: String = "",
+    var country: String = "",
+    var phone: String = "",
+    var fax: String = "",
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 )
