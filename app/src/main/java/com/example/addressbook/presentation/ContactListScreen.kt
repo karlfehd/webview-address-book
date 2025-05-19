@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.FloatingActionButton
@@ -33,8 +32,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.example.addressbook.R
 import com.example.addressbook.domain.Contact
 import com.example.addressbook.domain.ContactEvent
 import com.example.addressbook.domain.SortType
@@ -61,7 +62,7 @@ fun ContactListScreen(
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     ) {
                         Icon(
-                            imageVector = Icons.Default.AccountBox,
+                            painter = painterResource(R.drawable.baseline_cloud_download_24),
                             contentDescription = "Import Contacts"
                         )
                     }
@@ -217,37 +218,10 @@ fun ContactListScreen(
 fun ContactScreenPreview() {
     AddressBookTheme {
         val state = ContactState(
-            contacts = listOf(
-                Contact(
-                    customerID = "ALFKI",
-                    companyName = "Alfreds Futterkiste",
-                    contactName = "Maria Anders",
-                    contactTitle = "Sales Representative",
-                    email = "test@test.com",
-                    phone = "030-0074321",
-                    address = "Obere Str. 57",
-                    city = "Berlin",
-                    country = "Germany",
-                    postalCode = "12209",
-                    fax = "030-0076545"
-                ),
-                Contact(
-                    customerID = "ALFD",
-                    companyName = "McDonald's",
-                    contactName = "John Doe",
-                    contactTitle = "Manager",
-                    email = "jdoe@mcd.com",
-                    phone = "123-456-7890",
-                    address = "123 Fast Food St.",
-                    city = "Chicago",
-                    country = "USA",
-                    postalCode = "60601",
-                    fax = "123-456-7891"
-                )
-            ),
+            contacts = List(10) { randomContactGenerator() },
             isAddingContact = false,
             sortType = SortType.NAME,
-            successMessage = "Contacts imported successfully",
+            //successMessage = "Contacts imported successfully",
         )
         ContactListScreen(
             state = state,
@@ -255,4 +229,88 @@ fun ContactScreenPreview() {
         )
     }
 
+}
+
+fun randomContactGenerator(): Contact {
+    val companies =
+        listOf("Acme Corp", "GlobalTech", "FoodCo", "TechStack", "DataSys", "SmartSolutions")
+    val firstNames = listOf(
+        "John",
+        "Maria",
+        "James",
+        "Sarah",
+        "Michael",
+        "Emma",
+        "David",
+        "Anna",
+        "Robert",
+        "Lisa"
+    )
+    val lastNames = listOf(
+        "Smith",
+        "Johnson",
+        "Brown",
+        "Davis",
+        "Miller",
+        "Wilson",
+        "Moore",
+        "Taylor",
+        "Anderson",
+        "Thomas"
+    )
+    val titles = listOf(
+        "CEO",
+        "Manager",
+        "Sales Representative",
+        "Director",
+        "Coordinator",
+        "Supervisor",
+        "Associate"
+    )
+    val cities = listOf(
+        "New York",
+        "London",
+        "Berlin",
+        "Paris",
+        "Tokyo",
+        "Sydney",
+        "Toronto",
+        "Madrid",
+        "Rome",
+        "Amsterdam"
+    )
+    val countries = listOf(
+        "USA",
+        "UK",
+        "Germany",
+        "France",
+        "Japan",
+        "Australia",
+        "Canada",
+        "Spain",
+        "Italy",
+        "Netherlands"
+    )
+    val domains = listOf("company.com", "corp.net", "business.org", "enterprise.com", "global.net")
+
+    val firstName = firstNames.random()
+    val lastName = lastNames.random()
+    val company = companies.random()
+    val domain = domains.random()
+    val city = cities.random()
+    val country = countries.random()
+
+    return Contact(
+        customerID = "${firstName.take(2)}${lastName.take(3)}".uppercase(),
+        companyName = company,
+        contactName = "$firstName $lastName",
+        contactTitle = titles.random(),
+        email = "${firstName.lowercase()}.${lastName.lowercase()}@$domain",
+        phone = "${(100..999).random()}-${(100..999).random()}-${(1000..9999).random()}",
+        address = "${(1..999).random()} ${('A'..'Z').random()} Street",
+        city = city,
+        country = country,
+        postalCode = "${(10000..99999).random()}",
+        fax = "${(100..999).random()}-${(100..999).random()}-${(1000..9999).random()}"
+    )
 }
