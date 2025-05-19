@@ -16,6 +16,7 @@ This project was developed as an exploration of WebView integration within Andro
 
 ### Learning Outcomes
 - Gained practical experience with Jetpack Compose and MVVM architecture
+- First time implementing Room for Database and Hilt for Dependency Injection
 - Better understanding of WebView limitations and context requirements
 - Identified Kotlin Multiplatform as a potential alternative for future projects
 
