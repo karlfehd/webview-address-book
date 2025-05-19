@@ -4,6 +4,7 @@ sealed interface ContactEvent {
     data class SaveContact(val contact: Contact? = null) : ContactEvent
     data class EditContact(val contact: Contact): ContactEvent
     data class ImportSuccess(val count: Int): ContactEvent
+    data class SearchContacts(val query: String): ContactEvent
 
     data class SetCustomerId(val customerId: String) : ContactEvent
     data class SetCompanyName(val companyName: String) : ContactEvent

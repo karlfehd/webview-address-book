@@ -40,12 +40,34 @@ class ContactViewModel @Inject constructor(
     val state = combine(_state, _sortType, _contacts) { state, sortType, contacts ->
         state.copy(
             contacts = contacts,
-            sortType = sortType
+            sortType = sortType,
+            filteredContacts = filterContacts(contacts, state.searchQuery)
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ContactState())
 
+    private fun filterContacts(contacts: List<Contact>, query: String): List<Contact> {
+        return if (query.isBlank()) {
+            contacts
+        } else {
+            contacts.filter { contact ->
+                contact.contactName.contains(query, ignoreCase = true) ||
+                        //contact.companyName.contains(query, ignoreCase = true) ||
+                        contact.email.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
     fun onEvent(event: ContactEvent) {
         when (event) {
+            is ContactEvent.SearchContacts -> {
+                _state.update {
+                    it.copy(
+                        searchQuery = event.query,
+                        filteredContacts = filterContacts(_contacts.value, event.query)
+                    )
+                }
+            }
+
             is ContactEvent.EditContact -> {
                 _state.update {
                     it.copy(

@@ -8,6 +8,9 @@ data class ContactState(
     val successMessage: String? = null,
     val errorMessage: String? = null,
 
+    val filteredContacts: List<Contact> = emptyList(),
+    val searchQuery: String = "",
+
     val customerID: String = "",
     val companyName: String = "",
     val contactName: String = "",

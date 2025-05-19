@@ -48,9 +48,19 @@ fun ContactListScreen(
     onEvent: (ContactEvent) -> Unit,
 ) {
     var showImportDialog by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
+            topBar = {
+                ContactSearchBar(
+                    query = searchQuery,
+                    onQueryChange = { newQuery ->
+                        searchQuery = newQuery
+                        onEvent(ContactEvent.SearchContacts(newQuery))
+                    }
+                )
+            },
             floatingActionButton = {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -143,7 +153,7 @@ fun ContactListScreen(
                         }
                     }
                 }
-                items(state.contacts) { contact ->
+                items(state.filteredContacts) { contact ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
